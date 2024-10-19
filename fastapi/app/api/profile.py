@@ -1,0 +1,33 @@
+import logging
+from typing import Annotated
+
+from app.db.schemas.session import SessionData
+from app.services.servise_factory import ServiceFactory, get_service_factory
+from app.services.sessions.init import cookie
+from app.services.sessions.verifier import verifier
+from fastapi import APIRouter, Depends, HTTPException, Response, status, Request
+from app.db.models.user import User
+
+router = APIRouter()
+
+logger = logging.getLogger(__name__)
+
+
+@router.post("/", dependencies=[Depends(cookie)], status_code=status.HTTP_200_OK)
+async def profile(
+    response: Response,
+    service_factory: Annotated[ServiceFactory, Depends(get_service_factory)],
+    session_data: Annotated[SessionData, Depends(verifier)],
+):
+    """Получение инфо о пользователе."""
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Пользователь не авторизован.",
+        )
+
+    user_service = service_factory.get_user_service()
+    user_id = session_data.user_id
+    user: User = await user_service.get_user_by_id(user_id)
+
+    return {"data": {"username": user.username}}

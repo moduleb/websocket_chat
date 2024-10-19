@@ -1,0 +1,8 @@
+sqlalchemy
+aioredis
+asyncpg
+alembic
+fastapi
+celery
+aiogram
+pydantic-settings

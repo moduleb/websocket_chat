@@ -1,0 +1,4 @@
+celery
+aiogram
+pydantic-settings
+redis
