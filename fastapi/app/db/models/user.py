@@ -16,7 +16,7 @@ class User(Base):
 
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(id={self.id!r}, username={self.username!r}, password={self.password!r})"
+        return f"{self.__class__.__name__}(id={self.id!r}, username={self.username!r})"
 
 
 # class Address(Base):

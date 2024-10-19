@@ -11,7 +11,7 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.post("/", status_code=status.HTTP_200_OK)
+@router.get("/", status_code=status.HTTP_200_OK)
 async def profile(
     response: Response,
     service_factory: Annotated[ServiceFactory, Depends(get_service_factory)],

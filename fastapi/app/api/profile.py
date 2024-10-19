@@ -15,7 +15,7 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.post("/", dependencies=[Depends(cookie)], status_code=status.HTTP_200_OK)
+@router.get("/", dependencies=[Depends(cookie)], status_code=status.HTTP_200_OK)
 async def profile(
     response: Response,
     service_factory: Annotated[ServiceFactory, Depends(get_service_factory)],
