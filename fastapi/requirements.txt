@@ -6,3 +6,5 @@ fastapi
 celery
 aiogram
 pydantic-settings
+bcrypt
+fastapi-sessions

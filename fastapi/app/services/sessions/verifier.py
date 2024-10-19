@@ -44,7 +44,7 @@ class BasicVerifier(SessionVerifier[UUID, SessionData]):
 
 verifier = BasicVerifier(
     identifier="general_verifier",
-    auto_error=False,
+    auto_error=True,
     backend=backend,
     auth_http_exception=HTTPException(status_code=403, detail="invalid session"),
 )

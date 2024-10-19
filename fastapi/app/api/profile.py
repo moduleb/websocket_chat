@@ -1,12 +1,14 @@
 import logging
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 from app.db.schemas.session import SessionData
 from app.services.servise_factory import ServiceFactory, get_service_factory
 from app.services.sessions.init import cookie
 from app.services.sessions.verifier import verifier
-from fastapi import APIRouter, Depends, HTTPException, Response, status, Request
-from app.db.models.user import User
+from fastapi import APIRouter, Depends, Response, status
+
+if TYPE_CHECKING:
+    from app.db.models.user import User
 
 router = APIRouter()
 
@@ -20,12 +22,6 @@ async def profile(
     session_data: Annotated[SessionData, Depends(verifier)],
 ):
     """Получение инфо о пользователе."""
-    if not session_data:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Пользователь не авторизован.",
-        )
-
     user_service = service_factory.get_user_service()
     user_id = session_data.user_id
     user: User = await user_service.get_user_by_id(user_id)

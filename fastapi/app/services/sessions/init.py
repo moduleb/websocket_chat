@@ -9,9 +9,9 @@ cookie_params = CookieParameters()
 
 # Uses UUID
 cookie = SessionCookie(
-    cookie_name="cookie",
+    cookie_name="session",
     identifier="general_verifier",
-    auto_error=False,
+    auto_error=True,
     secret_key=settings.SESSION_SECRET_KEY,
     cookie_params=cookie_params,
 )

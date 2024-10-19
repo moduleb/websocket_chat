@@ -2,7 +2,7 @@ import logging
 from app.db.models.user import User
 from app.db.schemas.user import UssrDTO
 from app.services.crud_service import CrudService
-from app.utils.password_utils import verify_password
+from app.utils.password_utils import hash_password, verify_password
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class UserService:
     async def create_user(self, user_dto: UssrDTO) -> User:
         user = User(
             username=user_dto.username,
-            password=user_dto.password,
+            password=hash_password(user_dto.password),
             telegram_id=user_dto.telegram_id,
         )
         return await self.crud.create(user)
@@ -40,7 +40,7 @@ class UserService:
             raise UserNotFoundError(msg)
 
         if not verify_password(
-            password=user_dto.password, hashed_password=user.password
+            plain_password=user_dto.password, hashed_password=user.password
         ):
             msg = "Неверный пароль"
             logger.debug(msg)
