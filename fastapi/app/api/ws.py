@@ -21,19 +21,19 @@ router = APIRouter()
 connections = {}
 
 
-@router.websocket("/", dependencies=[Depends(ws_cookie)])
+@router.websocket("/", dependencies=[Depends(cookie)])
 async def accept_websocket_connection(
     websocket: WebSocket,
     service_factory: Annotated[ServiceFactory, Depends(get_service_factory)],
-    session_data: Annotated[SessionData, Depends(verify_session)],
+    # session_data: Annotated[SessionData, Depends(verify_session)],
 ):
-    user_id = session_data.user_id
+    # user_id = session_data.user_id
     await websocket.accept()
-    connections[user_id] = websocket
+    # connections[user_id] = websocket
 
     try:
         while True:
-            await websocket.send_text(f"Welcome, {user_id}!")
+            await websocket.send_text("Welcome, {user_id}!")
             data = await websocket.receive_text()
             await websocket.send_text(str(data))
 

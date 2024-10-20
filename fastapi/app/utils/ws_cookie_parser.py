@@ -9,6 +9,8 @@ async def ws_cookie(websocket: WebSocket):
     cookie_header = websocket.headers.get("cookie")
     # Обработайте куки и верните необходимые данные
     # Например, вы можете использовать библиотеку для парсинга куки
+    print("-"*20)
+    print(parse_cookies(cookie_header))
     return parse_cookies(cookie_header)
 
 
