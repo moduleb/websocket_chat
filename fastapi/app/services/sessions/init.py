@@ -9,7 +9,6 @@ from .ws_cookie import WSSessionCookie
 
 cookie_params = CookieParameters()
 
-# Uses UUID
 cookie = SessionCookie(
     cookie_name="session_id",
     identifier="general_verifier",
@@ -25,4 +24,5 @@ ws_cookie = WSSessionCookie(
     secret_key=settings.SESSION_SECRET_KEY,
     cookie_params=cookie_params,
 )
+
 backend = InMemoryBackend[UUID, SessionData]()

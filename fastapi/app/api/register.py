@@ -33,7 +33,7 @@ async def register(
 
     else:
         # Создаем сесссию
-        session = await session_service.create(user.id)
+        session = await session_service.create(user.username)
         # Устанавливаем cookie
         cookie.attach_to_response(response, session)
         return {"message": "Successfully registered"}

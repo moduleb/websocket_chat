@@ -34,6 +34,6 @@ async def profile(
             detail="Неверное имя пользователя или пароль.",
         )
 
-    session = await session_service.create(user.id)
+    session = await session_service.create(user.username)
     cookie.attach_to_response(response, session)
     return {"message": "Successfully logged in"}

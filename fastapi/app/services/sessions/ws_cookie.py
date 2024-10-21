@@ -1,15 +1,12 @@
-import logging
 from uuid import UUID
 
-from fastapi import HTTPException, Response, WebSocket
+from fastapi import WebSocket
 from fastapi.openapi.models import APIKey, APIKeyIn
 from fastapi.security.base import SecurityBase
+from fastapi_sessions.frontends.implementations.cookie import CookieParameters
 from fastapi_sessions.frontends.session_frontend import FrontendError, SessionFrontend
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 from itsdangerous.exc import BadTimeSignature
-
-logger = logging.getLogger(__name__)
-from fastapi_sessions.frontends.implementations.cookie import CookieParameters
 
 
 class WSSessionCookie(SecurityBase, SessionFrontend[UUID]):

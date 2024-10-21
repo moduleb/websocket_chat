@@ -12,11 +12,11 @@ class SessionServise:
         self.backend = backend
         self.SessionData = SessionData
 
-    async def create(self, user_id: int):
+    async def create(self, username: str):
         session = uuid4()
-        data = self.SessionData(user_id=user_id)
+        data = self.SessionData(username=username)
         await self.backend.create(session, data)
-        logger.debug("Создана сессия id: %s", session)
+        logger.debug("Создана новая сессия для '%s'", username)
         return session
 
     async def delete(self, session_id: UUID):

@@ -1,4 +1,3 @@
-import logging
 from uuid import UUID
 
 from app.db.schemas.session import SessionData
@@ -8,8 +7,6 @@ from fastapi_sessions.backends.implementations import InMemoryBackend
 from fastapi_sessions.session_verifier import SessionVerifier
 
 from .ws_session_verifier import WSSessionVerifier
-
-logger = logging.getLogger(__name__)
 
 
 class BasicVerifier:

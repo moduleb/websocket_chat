@@ -25,22 +25,21 @@ async def accept_websocket_connection(
     service_factory: Annotated[ServiceFactory, Depends(get_service_factory)],
     session_data: Annotated[SessionData, Depends(ws_verifier)],
 ):
-    if not session_data:
-        return
-    user_id = session_data.user_id
+
+    username = session_data.username
 
     await websocket.accept()
 
-    # connections[user_id] = websocket
+    connections[username] = websocket
 
     try:
         while True:
-            await websocket.send_text(f"Welcome, {user_id}!")
             data = await websocket.receive_text()
             await websocket.send_text(str(data))
 
     except WebSocketDisconnect:
-        del connections[user_id]
+        if user_id in connections:
+            del connections[username]
 
     except ValueError:
         pass
