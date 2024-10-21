@@ -26,7 +26,7 @@ async def profile(
     session_service = service_factory.get_session_service()
 
     try:
-        user: User = await user_service.get_user(user_dto)
+        user: User = await user_service.verify_user(user_dto)
 
     except (WrongPasswordError, UserNotFoundError):
         raise HTTPException(

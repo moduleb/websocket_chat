@@ -31,7 +31,7 @@ class UserService:
         )
         return await self.crud.create(user)
 
-    async def get_user(self, user_dto: UssrDTO) -> User | None:
+    async def verify_user(self, user_dto: UssrDTO) -> User | None:
         user = await self.crud.get_one_by_filters(username=user_dto.username)
 
         if not user:
@@ -57,3 +57,6 @@ class UserService:
             raise UserNotFoundError(msg)
 
         return user
+
+    async def get_by_username(self, username: str) -> User | None:
+        return await self.crud.get_one_by_filters(username=username)
