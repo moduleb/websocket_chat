@@ -45,7 +45,8 @@ class WSSessionVerifier(Generic[ID, SessionModel]):
 
         except Exception:
             if self.auto_error:
-                await websocket_.close(code=1008)
+                # await websocket_.close(code=1008)
+                pass
 
             return BackendError(
                 "failed to extract the {} session from state", self.identifier
@@ -53,7 +54,8 @@ class WSSessionVerifier(Generic[ID, SessionModel]):
 
         if isinstance(session_id, FrontendError):
             if self.auto_error:
-                await websocket_.close(code=1000)
+                pass
+                # await websocket_.close(code=1000)
             return
 
         session_data = await self.backend.read(session_id)
@@ -61,7 +63,8 @@ class WSSessionVerifier(Generic[ID, SessionModel]):
         if not session_data or not self.verify_session(session_data):
 
             if self.auto_error:
-                await websocket_.close(code=1000)
+                pass
+                # await websocket_.close(code=1000)
             return
 
         return session_data

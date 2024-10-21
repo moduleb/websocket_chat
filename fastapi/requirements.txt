@@ -8,3 +8,4 @@ aiogram
 pydantic-settings
 bcrypt
 fastapi-sessions
+jinja2

@@ -35,6 +35,7 @@ class WSSessionCookie(SecurityBase, SessionFrontend[UUID]):
         return self._identifier
 
     def __call__(self, websocket_: WebSocket) -> UUID | FrontendError:
+
         # Get the signed session id from the session cookie
         signed_session_id = websocket_.cookies.get(self.model.name)
 

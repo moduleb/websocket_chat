@@ -1,7 +1,8 @@
 import logging
 from typing import TYPE_CHECKING, Annotated
 
-from sqlalchemy.sql.functions import user
+from app.services.sessions.verifier import ws_verifier
+from app.db.schemas.session import SessionData
 
 from app.services.msg_service import MsgServiceError
 from app.services.servise_factory import ServiceFactory, get_service_factory
@@ -33,12 +34,13 @@ router = APIRouter()
 connections = {}
 
 
-@router.websocket("/")
+@router.websocket("/ws")
 async def accept_websocket_connection(
     websocket: WebSocket,
     service_factory: Annotated[ServiceFactory, Depends(get_service_factory)],
-    # session_data: Annotated[SessionData, Depends(ws_verifier)],
+    session_data: Annotated[SessionData, Depends(ws_verifier)],
 ):
+
     msg_service = service_factory.get_msg_service()
     user_service = service_factory.get_user_service()
 
@@ -51,13 +53,13 @@ async def accept_websocket_connection(
 
     try:
         while True:
-            """
+            '''
             Получаем json сообщения:
             {
             "to": "john_doe",
             "text": "Hello, this is a message!"
             }
-            """
+            '''
             data = await websocket.receive_json()
 
 
@@ -78,12 +80,12 @@ async def accept_websocket_connection(
             if msg_dto.to in connections:
                 websocket_recipient: WebSocket = connections[msg_dto.to]
                 logger.debug("Webcoket адресата найден: %s", websocket)
-                await websocket_recipient.send_json(msg_dto.model_dump_json())
+                await websocket_recipient.send_json(msg_dto.model_dump())
                 logger.debug("Сообщение отправлено to: %s", msg_dto.to)
             else:
                 # Находим получателя в бд
                 user_recipient: User = user_service.get_by_username(msg_dto.to)
-                logger.debug("Адресат сообщения оффлайн...")
+                logger.debug("Адресат сообщения оффлайн, username: %s", msg_dto.to)
 
                 if user_recipient:
                     pass
@@ -101,3 +103,4 @@ async def accept_websocket_connection(
 
     except ValueError:
         pass
+

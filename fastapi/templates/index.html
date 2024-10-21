@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div>
+      <h3>Пользователи</h3>
+    <ul id="users"></ul>
+    </div>
+
+    <div class="container">
+        <h1 class="mt-5">Chat</h1>
+        <div id="chat-box" class="mb-3" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
+            <!-- Сообщения будут добавляться сюда -->
+        </div>
+        <div class="input-group">
+            <input type="text" id="message-input" class="form-control" placeholder="Введите сообщение...">
+            <div class="input-group-append">
+                <button id="send-button" class="btn btn-primary">Отправить</button>
+            </div>
+        </div>
+    </div>
+    <script src="/static/script.js" defer></script>
+</body>
+</html>
+
