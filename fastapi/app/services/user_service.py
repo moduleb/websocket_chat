@@ -60,3 +60,6 @@ class UserService:
 
     async def get_by_username(self, username: str) -> User | None:
         return await self.crud.get_one_by_filters(username=username)
+
+    async def get_all_usernames(self):
+        return await self.crud.get_all_scalsrs("username")

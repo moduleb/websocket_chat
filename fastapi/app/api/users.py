@@ -16,14 +16,15 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("/", dependencies=[Depends(cookie)], status_code=status.HTTP_200_OK)
-async def profile(
-    response: Response,
+async def users(
     service_factory: Annotated[ServiceFactory, Depends(get_service_factory)],
     session_data: Annotated[SessionData, Depends(verifier)],
 ):
-    """Получение инфо о пользователе."""
-    # user_service = service_factory.get_user_service()
+    """Возвращает спискок имен пользователей, кроме собственного."""
+    user_service = service_factory.get_user_service()
     username = session_data.username
-    # user: User = await user_service.get_user_by_id(username)
+    usernames: list[str] = await user_service.get_all_usernames()
+    # Удаляем совственный username
+    usernames.remove(username)
 
-    return {"data": {"username": username}}
+    return {"data": {"usernames": usernames}}

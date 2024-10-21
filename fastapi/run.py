@@ -1,6 +1,6 @@
 # from contextlib import asynccontextmanager
 import uvicorn
-from app.api import login, profile, register, ws, logout
+from app.api import login, logout, profile, register, users, ws
 from app.settings import settings
 from fastapi import FastAPI
 
@@ -25,6 +25,7 @@ app.include_router(login.router, prefix="/login", tags=["Endpoints"])
 app.include_router(logout.router, prefix="/logout", tags=["Endpoints"])
 app.include_router(register.router, prefix="/register", tags=["Endpoints"])
 app.include_router(profile.router, prefix="/profile", tags=["Endpoints"])
+app.include_router(users.router, prefix="/users", tags=["Endpoints"])
 
 
 if __name__ == "__main__":
