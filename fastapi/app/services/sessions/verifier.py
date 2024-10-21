@@ -6,10 +6,13 @@ from app.services.sessions.init import backend
 from fastapi import HTTPException
 from fastapi_sessions.backends.implementations import InMemoryBackend
 from fastapi_sessions.session_verifier import SessionVerifier
-# from fastapi_sessions_local.ws_session_verifier import SessionVerifier
+
+from .ws_session_verifier import WSSessionVerifier
+
 logger = logging.getLogger(__name__)
 
-class BasicVerifier(SessionVerifier[UUID, SessionData]):
+
+class BasicVerifier:
     def __init__(
         self,
         *,
@@ -22,7 +25,6 @@ class BasicVerifier(SessionVerifier[UUID, SessionData]):
         self._auto_error = auto_error
         self._backend = backend
         self._auth_http_exception = auth_http_exception
-        logger.debug(f"Вызван конструктор класса {self.__class__.__name__}")
 
     @property
     def identifier(self):
@@ -45,10 +47,25 @@ class BasicVerifier(SessionVerifier[UUID, SessionData]):
         return True
 
 
-verifier = BasicVerifier(
+class Verifier(BasicVerifier, SessionVerifier[UUID, SessionData]):
+    pass
+
+
+class WSVerifier(BasicVerifier, WSSessionVerifier[UUID, SessionData]):
+    pass
+
+
+verifier = Verifier(
     identifier="general_verifier",
     auto_error=True,
     backend=backend,
     auth_http_exception=HTTPException(status_code=403, detail="invalid session"),
 )
-print(verifier)
+
+
+ws_verifier = WSVerifier(
+    identifier="general_verifier",
+    auto_error=True,
+    backend=backend,
+    auth_http_exception=HTTPException(status_code=403, detail="invalid session"),
+)

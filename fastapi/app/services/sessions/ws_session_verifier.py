@@ -3,7 +3,6 @@ import logging
 from abc import abstractmethod
 from typing import Generic
 
-from app.services.sessions.init import ws_cookie
 from fastapi import HTTPException, WebSocket
 from fastapi_sessions.backends.session_backend import (
     BackendError,
@@ -11,6 +10,8 @@ from fastapi_sessions.backends.session_backend import (
     SessionModel,
 )
 from fastapi_sessions.frontends.session_frontend import ID, FrontendError
+
+from .init import ws_cookie
 
 
 class WSSessionVerifier(Generic[ID, SessionModel]):
@@ -40,39 +41,28 @@ class WSSessionVerifier(Generic[ID, SessionModel]):
 
     async def __call__(self, websocket_: WebSocket):
         try:
-            # session_id: Union[ID, FrontendError] = \
-            # request.state.session_ids[self.identifier]
-            logging.debug(f"Вызван метод call у  {self.__class__.__name__}")
-
             session_id: ID | FrontendError = \
             ws_cookie(websocket_)
 
-            # request.state.session_ids[self.identifier]
-
         except Exception:
             if self.auto_error:
-                raise HTTPException(
-                    status_code=500, detail="internal failure of session verification"
-                )
+                await websocket_.close(code=1008)
+
             return BackendError(
                 "failed to extract the {} session from state", self.identifier
             )
 
         if isinstance(session_id, FrontendError):
             if self.auto_error:
-                raise self.auth_http_exception
+                await websocket_.close(code=1000)
             return
 
-        print(session_id)
-
-        print("Получаем сессион дата")
-
         session_data = await self.backend.read(session_id)
-        print(f"session_data= {session_data}")
+
         if not session_data or not self.verify_session(session_data):
-            print("Даты нет- ошибка!")
+
             if self.auto_error:
-                raise self.auth_http_exception
+                await websocket_.close(code=1000)
             return
 
         return session_data
