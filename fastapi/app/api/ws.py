@@ -44,14 +44,21 @@ async def accept_websocket_connection(
     msg_service = service_factory.get_msg_service()
     user_service = service_factory.get_user_service()
 
-    # username = session_data.username
-    username = "user1" if "user" in connections else "user"
+    username = session_data.username
+    # username = "user1" if "user" in connections else "user"
     logger.debug("Подключился user: %s", username)
     await websocket.accept()
 
     connections[username] = websocket
 
+
     try:
+
+        # Отправляем историю сообщений
+        messages = await msg_service.get_all_mesages(username)
+        for msg_dto in messages:
+            await websocket.send_json(msg_dto.model_dump())
+
         while True:
             '''
             Получаем json сообщения:
@@ -66,10 +73,10 @@ async def accept_websocket_connection(
             # Добавляем отправителя
             data["from_"] = username
 
-            # Сохраняем в бд
             try:
                 # Валидируем сообщение и создаем объект MsgDTO
                 msg_dto: MsgDTO = msg_service.create_msg_dto(data)
+                await msg_service.save_to_db(msg_dto)
                 logger.debug("Получено сообщение от: %s", msg_dto.from_)
 
             except MsgServiceError as e:
@@ -79,7 +86,7 @@ async def accept_websocket_connection(
             # Отправляем сообщение адресату
             if msg_dto.to in connections:
                 websocket_recipient: WebSocket = connections[msg_dto.to]
-                logger.debug("Webcoket адресата найден: %s", websocket)
+                logger.debug("Webcoket адресата: %s найден: %s", msg_dto.to, websocket)
                 await websocket_recipient.send_json(msg_dto.model_dump())
                 logger.debug("Сообщение отправлено to: %s", msg_dto.to)
             else:

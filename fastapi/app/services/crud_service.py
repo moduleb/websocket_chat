@@ -3,7 +3,7 @@ from typing import TypeVar
 
 from app.db.models.user import Base
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, or_
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ class CrudService:
         self.session.add(obj)
         await self.session.commit()
         await self.session.refresh(obj)  # Обновляем объект, чтобы получить его ID
-        logger.debug("Создан объект: %s\n", obj)
+        logger.debug("Сохранен в бд объект: %s", obj)
         return obj
 
 # --------------------------------------------------------------------------------------
@@ -63,5 +63,36 @@ class CrudService:
         # Выполняем запрос
         result = await self.session.execute(query)
         result = list(result.scalars())
-        logger.debug("Получено %s атрибутов.", len(result))
+        logger.debug("Получено атрибутов: %s.", len(result))
+        return result
+
+# --------------------------------------------------------------------------------------
+
+    async def get_all_by_filters_strategy_or(self, **filters) -> list[ModelGeneric] | None:
+        # Начинаем строить запрос
+        query = select(self.model)
+
+        # Список условий для фильтров
+        conditions = []
+
+        # Применяем фильтры
+        for key, value in filters.items():
+            if hasattr(self.model, key):
+                conditions.append(getattr(self.model, key) == value)
+            else:
+                logger.debug(
+                    "Invalid filter key: %s. No such attribute in model: %s",
+                    key,
+                    value,
+                )
+
+        # Если есть условия, добавляем их в запрос с помощью or_
+        if conditions:
+            query = query.where(or_(*conditions))
+
+        # Выполняем запрос
+        result = await self.session.execute(query)
+        result = result.all()  # Получаем все строки в виде списка Row
+        result = [row[0] for row in result]
+        logger.debug("Получено объектов: %s.", len(result))
         return result
