@@ -1,2 +1,2 @@
 from .cookie import CookieParameters as CookieParameters
-from .cookie import SessionCookie as SessionCookie
+from .ws_cookie import SessionCookie as SessionCookie

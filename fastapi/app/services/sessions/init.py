@@ -1,9 +1,13 @@
 from uuid import UUID
 
+from fastapi_sessions.frontends import implementations
+
 from app.db.schemas.session import SessionData
 from app.settings import settings
 from fastapi_sessions.backends.implementations import InMemoryBackend
-from fastapi_sessions.frontends.implementations import CookieParameters, SessionCookie
+from fastapi_sessions.frontends.implementations import CookieParameters
+from fastapi_sessions.frontends.implementations import SessionCookie
+from fastapi_sessions_local.frontends.implementations import SessionCookie as WSSessionCookie
 
 cookie_params = CookieParameters()
 
@@ -16,5 +20,11 @@ cookie = SessionCookie(
     cookie_params=cookie_params,
 )
 
-
+ws_cookie = WSSessionCookie(
+    cookie_name="session_id",
+    identifier="general_verifier",
+    auto_error=True,
+    secret_key=settings.SESSION_SECRET_KEY,
+    cookie_params=cookie_params,
+)
 backend = InMemoryBackend[UUID, SessionData]()

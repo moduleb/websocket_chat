@@ -5,8 +5,7 @@ from app.db.schemas.session import SessionData
 from app.services.sessions.init import backend
 from fastapi import HTTPException
 from fastapi_sessions.backends.implementations import InMemoryBackend
-from fastapi_sessions.session_verifier import SessionVerifier
-# from fastapi_sessions_local.ws_session_verifier import SessionVerifier
+from fastapi_sessions_local.ws_session_verifier import SessionVerifier
 logger = logging.getLogger(__name__)
 
 class BasicVerifier(SessionVerifier[UUID, SessionData]):
