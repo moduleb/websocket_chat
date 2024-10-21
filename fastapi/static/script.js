@@ -30,7 +30,7 @@ async function fetchUsers() {
 // Вызов функции для получения пользователей
 fetchUsers().then(usernames => {
     if (usernames) {
-        const usersList = document.getElementById('users'); // Получаем элемент списка пользователей
+        const usersList = document.getElementById('user-list'); // Получаем элемент списка пользователей
         usersList.innerHTML = ''; // Очищаем предыдущий список
         usernames.forEach(username => {
             const li = document.createElement('li'); // Создаем элемент списка
@@ -114,7 +114,7 @@ socket.onmessage = function(event) {
 // Обработчик события для кнопки отправки сообщения
 sendButton.addEventListener('click', () => {
     const message = messageInput.value; // Получаем текст из поля ввода
-    if (message) { // Проверяем, что сообщение не пустое
+    if (message && recipient) { // Проверяем, что сообщение не пустое
         // Создаем объект с сообщением и дополнительной информацией
         const jsonMessage = JSON.stringify({
             text: message, // Текст сообщения
@@ -122,6 +122,18 @@ sendButton.addEventListener('click', () => {
         });
         socket.send(jsonMessage); // Отправляем JSON-объект на сервер
         messageInput.value = ''; // Очищаем поле ввода после отправки
+
+        // Создаем новый элемент div для отображения сообщения
+        const messageElement = document.createElement('div');
+        
+        // Устанавливаем текст сообщения
+        messageElement.textContent = `You: ${message}`; // Форматируем сообщение
+
+        // Добавляем элемент в контейнер чата
+        chatBox.appendChild(messageElement);
+        
+        // Прокручиваем вниз, чтобы показать последнее сообщение
+        chatBox.scrollTop = chatBox.scrollHeight;
     }
 });
 

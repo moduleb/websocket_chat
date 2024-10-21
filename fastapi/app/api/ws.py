@@ -84,7 +84,7 @@ async def accept_websocket_connection(
                 logger.debug("Сообщение отправлено to: %s", msg_dto.to)
             else:
                 # Находим получателя в бд
-                user_recipient: User = user_service.get_by_username(msg_dto.to)
+                user_recipient: User = await user_service.get_by_username(msg_dto.to)
                 logger.debug("Адресат сообщения оффлайн, username: %s", msg_dto.to)
 
                 if user_recipient:
