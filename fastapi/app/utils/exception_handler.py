@@ -10,8 +10,6 @@ async def http_exception_handler(request: Request, exc: HTTPException):
         msg: str = "Доступ запрещен!"
         link: str = "/register"
         link_text: str = "Войти или зарегестрировться"
-
-        # Возвращаем рендеринг шаблона с передачей объекта request
         return templates.TemplateResponse("error.html", {
             "request": request,
             "msg": msg,
@@ -19,5 +17,16 @@ async def http_exception_handler(request: Request, exc: HTTPException):
             "link_text": link_text
         }, status_code=403)
 
-    # Для других статусов, возвращаем стандартный обработчик
-    return await request.app.default_exception_handler(request, exc)
+    elif exc.status_code == 404:
+        msg: str = "Страница не найдена"
+        link: str = "/"
+        link_text: str = "Перейти на главную"
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "msg": msg,
+            "link": link,
+            "link_text": link_text
+        }, status_code=404)
+    else:
+        # Для других статусов, возвращаем стандартный обработчик
+        return await request.app.default_exception_handler(request, exc)

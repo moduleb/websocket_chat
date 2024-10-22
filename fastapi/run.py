@@ -46,13 +46,17 @@ app.include_router(chat.router, prefix="/chat", tags=["Pages"])
 # app.include_router(profile.router, prefix="/profile", tags=["Pages"])
 app.include_router(success.router, prefix="/success", include_in_schema=False)
 
-# Регистрируем обработчик исключений
+# Подключаем статические файлы
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 @app.exception_handler(HTTPException)
 async def custom_http_exception_handler(request: Request, exc: HTTPException):
     return await http_exception_handler(request, exc)
 
-# Подключаем статические файлы
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# Обработчик для несуществующих маршрутов
+@app.get("/{full_path:path}", response_class=HTMLResponse)
+async def catch_all(full_path: str):
+    raise HTTPException(404)
 
 if __name__ == "__main__":
     uvicorn.run(app, log_level=settings.LOG_LEVEL.lower())
