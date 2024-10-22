@@ -2,9 +2,11 @@
 const chatBox = document.getElementById('chat-box'); // Контейнер для отображения сообщений чата
 const messageInput = document.getElementById('message-input'); // Поле ввода для сообщения
 const sendButton = document.getElementById('send-button'); // Кнопка для отправки сообщения
-let my_username = ""
-
+let my_username = "" // Переменная для хранение собственного имени
 let recipient = null; // Переменная для хранения имени получателя
+
+
+// ----------------- Работа со списком пользователей -----------------------------------
 
 // Функция для получения списка пользователей
 async function fetchUsers() {
@@ -70,7 +72,6 @@ fetchUsers().then(usernames => {
         console.log('Пользователи не найдены.'); // Сообщение, если пользователей нет
     }
 });
-
 
 
 // ----------------- Получение истории сообщений ---------------------------------------
@@ -189,7 +190,6 @@ socket.onmessage = function(event) {
         console.error('Error parsing message:', error);
     }
 };
-
 
 
 // ----------------- Отправка сообщения по websocket -----------------------------------

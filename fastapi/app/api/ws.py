@@ -84,9 +84,9 @@ async def accept_websocket_connection(
                 logger.debug("Адресат сообщения оффлайн, username: %s", msg_dto.to)
 
                 if user_recipient:
-                    pass
-                    # tg_service.notify(to = user_recipient.telegram_id,
-                    #               from_ = msg_dto.from_)
+
+                    tg_service.send_notification(to = user_recipient.telegram_id,
+                                  from_ = msg_dto.from_)
                 else:
                     logger.warning("Пользователя с username: %s не найден.", msg_dto.to)
 

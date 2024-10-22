@@ -2,7 +2,7 @@ services:
 
   redis:
     container_name: redis
-    image: redis:latest
+    image: redis: alpine
     ports:
       - "6379:6379"
     healthcheck:
@@ -26,51 +26,42 @@ services:
       timeout: 5s
       retries: 5
 
-  # celery_app:
-  #   container_name: celery
-  #   build:
-  #     context: ./celery_app
-  #   env_file:
-  #     - .env
-  #   volumes:
-  #     - ./shared:/app/shared
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #     grpc_app:
-  #       condition: service_started
+  celery:
+    container_name: celery
+    build:
+      context: ./celery
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
 
-  # fastapi:
-  #   container_name: fastapi
-  #   build:
-  #     context: ./fastapi_app
-  #   env_file:
-  #     - .env
-  #   ports:
-  #    - "8000:80"
-  #   volumes:
-  #     - ./shared:/app/shared
-  #     - ./shared:/app/db/shared
-  #   command: uvicorn run:app --host 0.0.0.0 --port 8000
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #     grpc_app:
-  #       condition: service_started
 
-  # bot:
-  #   container_name: bot
-  #   build:
-  #     context: ./bot_app
-  #   env_file:
-  #     - .env
-  #   volumes:
-  #     - ./shared:/app/shared
-  #   depends_on:
-  #     redis:
-  #       condition: service_healthy
-  #     fastapi:
-  #       condition: service_started
+  
+  bot:
+    container_name: bot
+    build:
+      context: ./bot
+    env_file:
+      - .env
+
+  fastapi:
+    container_name: fastapi
+    build:
+      context: ./fastapi
+    env_file:
+      - .env
+    ports:
+     - "8000:80"
+    volumes:
+    command: uvicorn run:app --host 0.0.0.0 --port 8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      celery:
+        condition: service_started
 
 #  nginx:
 #    container_name: nginx
@@ -84,9 +75,5 @@ services:
 #      - ./django_app/mediafiles:/django/mediafiles
 #    depends_on:
 #      fastapi:
-#        condition: service_started
-#      bot:
-#        condition: service_started
-#      django:
 #        condition: service_started
 
