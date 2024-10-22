@@ -2,6 +2,7 @@
 const chatBox = document.getElementById('chat-box'); // Контейнер для отображения сообщений чата
 const messageInput = document.getElementById('message-input'); // Поле ввода для сообщения
 const sendButton = document.getElementById('send-button'); // Кнопка для отправки сообщения
+let my_username = ""
 
 let recipient = null; // Переменная для хранения имени получателя
 
@@ -35,11 +36,34 @@ fetchUsers().then(usernames => {
         usernames.forEach(username => {
             const li = document.createElement('li'); // Создаем элемент списка
             li.textContent = username; // Устанавливаем текст элемента
-            li.addEventListener('click', () => {
-                recipient = username; // Устанавливаем переменную recipient на выбранное имя
+
+            li.addEventListener('click', async () => { // Объявляем обработчик как асинхронный
+                // Убираем выделение у всех элементов списка
+                const allItems = usersList.getElementsByTagName('li');
+                for (const item of allItems) {
+                    item.classList.remove('active'); // Удаляем класс выделения
+                }
+
+                // Устанавливаем переменную recipient на выбранное имя
+                recipient = username; 
                 messageInput.placeholder = `Сообщение для ${recipient}`; // Изменяем текст подсказки
                 console.log(`Выбран получатель: ${recipient}`); // Логируем выбранного получателя
+                
+                // Получаем историю сообщений
+                const messages = await fetchMessagesHistory(recipient);
+                
+                // Очищаем чат
+                chatBox.innerHTML = ''; // Очищаем содержимое chatBox
+
+                // Отображаем сообщения
+                for (const msg of messages) { // Используем for...of для итерации по массиву
+                    displayMessage(msg.from_, msg.text);
+                }
+
+                // Выделяем текущий элемент
+                li.classList.add('active'); // Добавляем класс выделения
             });
+
             usersList.appendChild(li); // Добавляем элемент в список
         });
     } else {
@@ -49,9 +73,82 @@ fetchUsers().then(usernames => {
 
 
 
+// ----------------- Получение истории сообщений ---------------------------------------
+
+
+async function fetchMessagesHistory(recipient) {
+    try {
+        // Формируем URL с параметром recipient
+        const response = await fetch(`/messages/?recipient=${encodeURIComponent(recipient)}`);
+
+        if (!response.ok) {
+            throw new Error('Сетевая ошибка: ' + response.status); // Обработка ошибок сети
+        }
+        const data = await response.json(); // Десериализация JSON
+
+        my_username = data.data.username
+        const messages = data.data.messages
+
+        console.log(messages); // Выводим сообщения в консоль
+
+        return messages; // Возвращаем массив сообщений
+    } catch (error) {
+        console.error('Ошибка при получении истории сообщений:', error); // Логируем ошибку
+        return []; // Возвращаем пустой массив в случае ошибки
+    }
+}
+
+
+// ----------------- Получение сообщения по websocket ----------------------------------
+
+
 const socket = new WebSocket('ws://127.0.0.1:8000/ws');
 
-// Обработчик события для получения сообщений от сервера
+
+
+
+// Функция для отображения сообщения в чате
+function displayMessage(from_, text) {
+    // Создаем новый элемент div для отображения сообщения
+    const messageElement = document.createElement('div');
+    
+    // Устанавливаем стиль для выравнивания сообщения
+    if (from_ === my_username) {
+        messageElement.style.textAlign = 'right'; // Выравнивание влево для сообщений от my_username
+        from_ = "You"
+    } else {
+        messageElement.style.textAlign = 'left'; // Выравнивание вправо для остальных сообщений
+    }
+
+    // Создаем элемент для имени отправителя
+    const nameElement = document.createElement('span');
+    nameElement.textContent = from_; // Устанавливаем текст имени
+    nameElement.style.color = '#007bff'; // Устанавливаем цвет имени
+    nameElement.style.fontSize = 'small'; // Устанавливаем размер шрифта
+    nameElement.style.display = 'block'; // Делаем имя блочным элементом, чтобы оно было на отдельной строке
+
+    // Создаем элемент для текста сообщения
+    const textElement = document.createElement('div'); // Изменяем на div
+    textElement.textContent = text; // Устанавливаем текст сообщения
+    textElement.style.marginTop = '-6px'; // Устанавливаем верхний отступ для текста сообщения (можно настроить по желанию)
+
+    // Добавляем элементы имени и текста в сообщение
+    messageElement.appendChild(nameElement);
+    messageElement.appendChild(textElement);
+
+    // Добавляем элемент в контейнер чата
+    chatBox.appendChild(messageElement);
+    
+    // Прокручиваем вниз, чтобы показать последнее сообщение
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+
+
+
+
+
+// Обработчик события onmessage для сокета
 socket.onmessage = function(event) {
     // Выводим данные в консоль для отладки
     console.log('Received message:', event.data);
@@ -85,17 +182,8 @@ socket.onmessage = function(event) {
 
             // Проверяем, что поля from_ и text существуют
             if (from_ !== undefined && text !== undefined) {
-                // Создаем новый элемент div для отображения сообщения
-                const messageElement = document.createElement('div');
-                
-                // Устанавливаем текст сообщения
-                messageElement.textContent = `${from_}: ${text}`; // Форматируем сообщение
-
-                // Добавляем элемент в контейнер чата
-                chatBox.appendChild(messageElement);
-                
-                // Прокручиваем вниз, чтобы показать последнее сообщение
-                chatBox.scrollTop = chatBox.scrollHeight;
+                // Вызываем функцию для отображения сообщения
+                displayMessage(from_, text);
             } else {
                 console.error('Invalid message format: missing from_ or text', messageData);
             }
@@ -109,6 +197,7 @@ socket.onmessage = function(event) {
 
 
 
+// ----------------- Отправка сообщения по websocket -----------------------------------
 
 
 // Обработчик события для кнопки отправки сообщения

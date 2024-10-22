@@ -1,16 +1,8 @@
 body {
     display: flex;
     height: 100vh;
-    margin: 0;
 }
 
-/* #users { */
-/*     width: 250px; */
-/*     background-color: #f8f9fa; */
-/*     border-right: 1px solid #ccc; */
-/*     padding: 10px; */
-/*     overflow-y: auto; */
-/* } */
 
 #users {
     width: 300px;
@@ -26,8 +18,9 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    padding: 20px 5px 50px 5px;
 }
+
 #chat-box {
     flex: 1;
     overflow-y: scroll;
@@ -35,12 +28,12 @@ body {
     padding: 10px;
     background-color: #ffffff;
     margin-bottom: 10px;
+    font-size: 20px;
 }
+
 .input-group {
     width: 100%;
 }
-
-
 
 #users h3 {
     margin-bottom: 20px;
@@ -71,4 +64,12 @@ li.active {
     color: white; /* Цвет текста для активного пользователя */
 }
 
-
+#placeholder {
+    width: 300px;
+    background-color: #ffffff;
+    border-right: 1px solid #ddd;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    border-radius: 5px; /* Закругленные углы */
+}

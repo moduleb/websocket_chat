@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("/", status_code=status.HTTP_200_OK)
-async def profile(
+async def logout(
     response: Response,
     service_factory: Annotated[ServiceFactory, Depends(get_service_factory)],
     session_id: UUID = Depends(cookie),

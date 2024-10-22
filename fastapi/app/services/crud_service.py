@@ -3,7 +3,7 @@ from typing import TypeVar
 
 from app.db.models.user import Base
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, or_
+from sqlalchemy import select, or_, and_
 
 logger = logging.getLogger(__name__)
 
@@ -68,27 +68,35 @@ class CrudService:
 
 # --------------------------------------------------------------------------------------
 
-    async def get_all_by_filters_strategy_or(self, **filters) -> list[ModelGeneric] | None:
+    async def get_all_by_filters_strategy_or(self, attrs: list, values: list) -> list[ModelGeneric] | None:
         # Начинаем строить запрос
         query = select(self.model)
+
+        # Проверяем, что передано ровно два атрибута
+        if len(attrs) != 2:
+            logger.error("Должно быть передано ровно два атрибута.")
+            return None
 
         # Список условий для фильтров
         conditions = []
 
-        # Применяем фильтры
-        for key, value in filters.items():
-            if hasattr(self.model, key):
-                conditions.append(getattr(self.model, key) == value)
-            else:
-                logger.debug(
-                    "Invalid filter key: %s. No such attribute in model: %s",
-                    key,
-                    value,
-                )
+        # Применяем фильтры для первого атрибута
+        if hasattr(self.model, attrs[0]):
+            attr1_conditions = [getattr(self.model, attrs[0]) == value for value in values]
+            conditions.append(or_(*attr1_conditions))
+        else:
+            logger.debug("Invalid filter key: %s. No such attribute in model.", attrs[0])
 
-        # Если есть условия, добавляем их в запрос с помощью or_
+        # Применяем фильтры для второго атрибута
+        if hasattr(self.model, attrs[1]):
+            attr2_conditions = [getattr(self.model, attrs[1]) == value for value in values]
+            conditions.append(or_(*attr2_conditions))
+        else:
+            logger.debug("Invalid filter key: %s. No such attribute in model.", attrs[1])
+
+        # Если есть условия, добавляем их в запрос с помощью and_
         if conditions:
-            query = query.where(or_(*conditions))
+            query = query.where(and_(*conditions))
 
         # Выполняем запрос
         result = await self.session.execute(query)

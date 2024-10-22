@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 @router.post("/")
-async def profile(
+async def login(
     user_dto: UssrDTO,
     response: Response,
     service_factory: Annotated[ServiceFactory, Depends(get_service_factory)],

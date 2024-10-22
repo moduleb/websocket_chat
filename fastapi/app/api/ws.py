@@ -1,11 +1,10 @@
 import logging
 from typing import TYPE_CHECKING, Annotated
 
-from app.services.sessions.verifier import ws_verifier
 from app.db.schemas.session import SessionData
-
 from app.services.msg_service import MsgServiceError
 from app.services.servise_factory import ServiceFactory, get_service_factory
+from app.services.sessions.verifier import ws_verifier
 from fastapi import (
     APIRouter,
     Depends,
@@ -14,16 +13,8 @@ from fastapi import (
 )
 
 if TYPE_CHECKING:
-    from app.db.schemas.msg import MsgDTO
     from app.db.models.user import User
-
-"""
-Формат JSON
-{
-"to": "john_doe",
-"text": "Hello, this is a message!"
-}
-"""
+    from app.db.schemas.msg import MsgDTO
 
 
 logger = logging.getLogger(__name__)
@@ -45,30 +36,23 @@ async def accept_websocket_connection(
     user_service = service_factory.get_user_service()
 
     username = session_data.username
-    # username = "user1" if "user" in connections else "user"
     logger.debug("Подключился user: %s", username)
-    await websocket.accept()
 
+    await websocket.accept()
     connections[username] = websocket
 
-
     try:
-
-        # Отправляем историю сообщений
-        messages = await msg_service.get_all_mesages(username)
-        for msg_dto in messages:
-            await websocket.send_json(msg_dto.model_dump())
-
         while True:
-            '''
+
+            """
             Получаем json сообщения:
             {
             "to": "john_doe",
             "text": "Hello, this is a message!"
             }
-            '''
-            data = await websocket.receive_json()
+            """
 
+            data = await websocket.receive_json()
 
             # Добавляем отправителя
             data["from_"] = username
@@ -76,6 +60,7 @@ async def accept_websocket_connection(
             try:
                 # Валидируем сообщение и создаем объект MsgDTO
                 msg_dto: MsgDTO = msg_service.create_msg_dto(data)
+                # Сохраняем в бд
                 await msg_service.save_to_db(msg_dto)
                 logger.debug("Получено сообщение от: %s", msg_dto.from_)
 
@@ -83,12 +68,16 @@ async def accept_websocket_connection(
                 logger.debug("Ошибка во время сохранения сообщения в бд\nError: %s", e)
                 continue
 
-            # Отправляем сообщение адресату
             if msg_dto.to in connections:
+
+                # Находим websocket адресата
                 websocket_recipient: WebSocket = connections[msg_dto.to]
                 logger.debug("Webcoket адресата: %s найден: %s", msg_dto.to, websocket)
+
+                # Отправляем сообщение
                 await websocket_recipient.send_json(msg_dto.model_dump())
                 logger.debug("Сообщение отправлено to: %s", msg_dto.to)
+
             else:
                 # Находим получателя в бд
                 user_recipient: User = await user_service.get_by_username(msg_dto.to)
@@ -101,13 +90,9 @@ async def accept_websocket_connection(
                 else:
                     logger.warning("Пользователя с username: %s не найден.", msg_dto.to)
 
-
-
-
     except WebSocketDisconnect:
         if username in connections:
             del connections[username]
 
     except ValueError:
         pass
-
