@@ -19,6 +19,9 @@ class UssrDTO(BaseModel):
     class Config:
         from_attributes = True
 
+class UserLoginDTO(UssrDTO):
+    telegram_id: int = Field(default=None, exclude=True)  # Исключаем поле 
+
     # @field_validator("password")
     # def validate_password(cls, v): 
     #     if not any(c.islower() for c in v):

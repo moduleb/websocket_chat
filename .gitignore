@@ -3,3 +3,4 @@ __pycache__/
 .env
 /fastapi/migrations/versions/*
 .DS_Store
+pg_data/

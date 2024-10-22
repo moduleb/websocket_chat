@@ -1,11 +1,11 @@
 sqlalchemy
-aioredis
+redis
 asyncpg
 alembic
 fastapi
 celery
-aiogram
 pydantic-settings
 bcrypt
 fastapi-sessions
 jinja2
+uvicorn[standard]

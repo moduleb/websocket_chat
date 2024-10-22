@@ -34,6 +34,7 @@ async def accept_websocket_connection(
 
     msg_service = service_factory.get_msg_service()
     user_service = service_factory.get_user_service()
+    tg_service = service_factory.get_tg_service()
 
     username = session_data.username
     logger.debug("Подключился user: %s", username)

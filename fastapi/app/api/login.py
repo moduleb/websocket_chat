@@ -1,7 +1,7 @@
 import logging
 from typing import TYPE_CHECKING, Annotated
 
-from app.db.schemas.user import UssrDTO
+from app.db.schemas.user import UserLoginDTO
 from app.services.servise_factory import ServiceFactory, get_service_factory
 from app.services.sessions.init import cookie
 from app.services.user_service import UserNotFoundError, WrongPasswordError
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 @router.post("/")
 async def login(
-    user_dto: UssrDTO,
+    user_dto: UserLoginDTO,
     response: Response,
     service_factory: Annotated[ServiceFactory, Depends(get_service_factory)],
 ):

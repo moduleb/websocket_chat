@@ -1,5 +1,5 @@
 
-from sqlalchemy import String
+from sqlalchemy import BigInteger, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -12,8 +12,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String(30), unique=True)
     password: Mapped[str] = mapped_column(String(70))
-    telegram_id: Mapped[int | None]
-
+    telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id!r}, username={self.username!r})"

@@ -2,7 +2,7 @@ services:
 
   redis:
     container_name: redis
-    image: redis: alpine
+    image: redis:alpine
     ports:
       - "6379:6379"
     healthcheck:
@@ -10,6 +10,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
 
   postgres:
     container_name: postgres
@@ -26,6 +27,7 @@ services:
       timeout: 5s
       retries: 5
 
+
   celery:
     container_name: celery
     build:
@@ -36,7 +38,6 @@ services:
       redis:
         condition: service_healthy
 
-
   
   bot:
     container_name: bot
@@ -45,6 +46,7 @@ services:
     env_file:
       - .env
 
+
   fastapi:
     container_name: fastapi
     build:
@@ -52,9 +54,10 @@ services:
     env_file:
       - .env
     ports:
-     - "8000:80"
-    volumes:
-    command: uvicorn run:app --host 0.0.0.0 --port 8000
+     - "8000:8000"
+    command: >
+      sh -c "alembic upgrade head && uvicorn run:app --host 0.0.0.0 --port 8000"
+    # command: uvicorn run:app --host 0.0.0.0 --port 8000
     depends_on:
       postgres:
         condition: service_healthy
