@@ -11,7 +11,7 @@ let recipient = null; // Переменная для хранения имени
 // Функция для получения списка пользователей
 async function fetchUsers() {
     try {
-        const response = await fetch('/users'); // Запрос к серверу для получения списка пользователей
+        const response = await fetch('/api/users'); // Запрос к серверу для получения списка пользователей
         if (!response.ok) {
             throw new Error('Сетевая ошибка: ' + response.status); // Обработка ошибок сети
         }
@@ -79,7 +79,7 @@ fetchUsers().then(usernames => {
 async function fetchMessagesHistory(recipient) {
     try {
         // Формируем URL с параметром recipient
-        const response = await fetch(`/messages/?recipient=${encodeURIComponent(recipient)}`);
+        const response = await fetch(`/api/messages/?recipient=${encodeURIComponent(recipient)}`);
 
         if (!response.ok) {
             throw new Error('Сетевая ошибка: ' + response.status); // Обработка ошибок сети
