@@ -1,6 +1,7 @@
 # from contextlib import asynccontextmanager
 import uvicorn
-from app.api import chat, login, logout, profile, register, users, ws, messages
+from app.api import login, logout, register, users, ws, messages
+from app.views import chat, profile
 from app.settings import settings
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -27,7 +28,7 @@ app.add_middleware(
 )
 
 # Api Endpoints
-app.include_router(ws.router, tags=["Websocket Endpoint"])
+app.include_router(ws.router)
 app.include_router(login.router, prefix="/login", tags=["API Endpoints"])
 app.include_router(logout.router, prefix="/logout", tags=["API Endpoints"])
 app.include_router(register.router, prefix="/register", tags=["API Endpoints"])

@@ -26,4 +26,4 @@ async def chat(
 ):
     user_service = service_factory.get_user_service()
     # username = session_data.username
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("chat.html", {"request": request})

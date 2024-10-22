@@ -75,7 +75,6 @@ fetchUsers().then(usernames => {
 
 // ----------------- Получение истории сообщений ---------------------------------------
 
-
 async function fetchMessagesHistory(recipient) {
     try {
         // Формируем URL с параметром recipient
@@ -99,13 +98,7 @@ async function fetchMessagesHistory(recipient) {
 }
 
 
-// ----------------- Получение сообщения по websocket ----------------------------------
-
-
-const socket = new WebSocket('ws://127.0.0.1:8000/ws');
-
-
-
+// ----------------- Отображение сообщений  --------------------------------------------
 
 // Функция для отображения сообщения в чате
 function displayMessage(from_, text) {
@@ -144,9 +137,9 @@ function displayMessage(from_, text) {
 }
 
 
+// ----------------- Получение сообщения по websocket ----------------------------------
 
-
-
+const socket = new WebSocket('ws://127.0.0.1:8000/ws');
 
 // Обработчик события onmessage для сокета
 socket.onmessage = function(event) {
@@ -182,8 +175,10 @@ socket.onmessage = function(event) {
 
             // Проверяем, что поля from_ и text существуют
             if (from_ !== undefined && text !== undefined) {
+                if(from_ === recipient){ // показываем сообщение только если активна вкладка с отправителем
                 // Вызываем функцию для отображения сообщения
                 displayMessage(from_, text);
+                }
             } else {
                 console.error('Invalid message format: missing from_ or text', messageData);
             }
@@ -199,7 +194,6 @@ socket.onmessage = function(event) {
 
 // ----------------- Отправка сообщения по websocket -----------------------------------
 
-
 // Обработчик события для кнопки отправки сообщения
 sendButton.addEventListener('click', () => {
     const message = messageInput.value; // Получаем текст из поля ввода
@@ -212,17 +206,7 @@ sendButton.addEventListener('click', () => {
         socket.send(jsonMessage); // Отправляем JSON-объект на сервер
         messageInput.value = ''; // Очищаем поле ввода после отправки
 
-        // Создаем новый элемент div для отображения сообщения
-        const messageElement = document.createElement('div');
-        
-        // Устанавливаем текст сообщения
-        messageElement.textContent = `You: ${message}`; // Форматируем сообщение
-
-        // Добавляем элемент в контейнер чата
-        chatBox.appendChild(messageElement);
-        
-        // Прокручиваем вниз, чтобы показать последнее сообщение
-        chatBox.scrollTop = chatBox.scrollHeight;
+        displayMessage(my_username, message)
     }
 });
 
