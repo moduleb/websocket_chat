@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from app.db.schemas.session import SessionData
+from app.services.sessions.redis_backend import RedisBackend
 from app.settings import settings
 from fastapi_sessions.backends.implementations import InMemoryBackend
 from fastapi_sessions.frontends.implementations import CookieParameters, SessionCookie
@@ -24,5 +25,5 @@ ws_cookie = WSSessionCookie(
     secret_key=settings.SESSION_SECRET_KEY,
     cookie_params=cookie_params,
 )
-
-backend = InMemoryBackend[UUID, SessionData]()
+backend = RedisBackend[UUID, SessionData]()
+# backend = InMemoryBackend[UUID, SessionData]()

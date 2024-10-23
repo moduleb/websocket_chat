@@ -1,6 +1,9 @@
 # from contextlib import asynccontextmanager
+import asyncio
+from contextlib import asynccontextmanager
 import uvicorn
 from app.api import login, logout, register, users, ws, messages
+from app.services.sessions.init import backend
 from app.views import chat, profile, success, index
 from app.settings import settings
 from fastapi import FastAPI
@@ -21,7 +24,18 @@ from app.utils.exception_handler import http_exception_handler
 #     yield
 
 # app = FastAPI(title="IM CHAT", lifespan=lifespan)
-app = FastAPI(title="IM CHAT")
+# async def connect_to_redis():
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await backend.connect()
+    yield
+    await backend.close()
+
+
+app = FastAPI(title="ICQ 2024", lifespan=lifespan)
+
 
 # Настройка CORS
 app.add_middleware(
@@ -46,17 +60,26 @@ app.include_router(chat.router, prefix="/chat", tags=["Pages"])
 # app.include_router(profile.router, prefix="/profile", tags=["Pages"])
 app.include_router(success.router, prefix="/success", include_in_schema=False)
 
+
 # Подключаем статические файлы
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+
+# Обработка ошибок
 @app.exception_handler(HTTPException)
 async def custom_http_exception_handler(request: Request, exc: HTTPException):
     return await http_exception_handler(request, exc)
 
+
 # Обработчик для несуществующих маршрутов
 @app.get("/{full_path:path}", response_class=HTMLResponse)
 async def catch_all(full_path: str):
+    """Вызывает исключение при переходе на незарегистрированным маршрутам.
+    Далее exception_handler (функция выше) обработает это исключение.
+    Без явного вызова исключения, обработать его не получится.
+    """
     raise HTTPException(404)
+
 
 if __name__ == "__main__":
     uvicorn.run(app, log_level=settings.LOG_LEVEL.lower())
