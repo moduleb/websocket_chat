@@ -11,7 +11,7 @@ let recipient = null; // Переменная для хранения имени
 // Функция для получения списка пользователей
 async function fetchUsers() {
     try {
-        const response = await fetch('/api/users'); // Запрос к серверу для получения списка пользователей
+        const response = await fetch('/api/users/'); // Запрос к серверу для получения списка пользователей
         if (!response.ok) {
             throw new Error('Сетевая ошибка: ' + response.status); // Обработка ошибок сети
         }
@@ -140,7 +140,7 @@ function displayMessage(from_, text) {
 
 // ----------------- Получение сообщения по websocket ----------------------------------
 
-const socket = new WebSocket('ws://127.0.0.1:8000/ws');
+const socket = new WebSocket('ws://127.0.0.1:80/ws');
 
 // Обработчик события onmessage для сокета
 socket.onmessage = function(event) {
