@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="img/cat_icon.png" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Register</title>
+</head>
+
+<body>
+    <main class="main" id="main">
+        <div class="container">
+            <div class="wrap">
+
+                <!-- <Image block -->
+                <div class="image-block">
+                    <div class="background-image"></div>
+                    <div class="image-block-text">
+                        <h1>Welcome to ICQ 2024!</h1>
+                        <p>Сервис обмена мгновенными сообщениями.</p>
+                    </div>
+                </div>
+
+                <!-- Form block -->
+                <div class="form-box" id="form-box">
+                    <p class="form-greeting" id="form-greeting">Welcome to ICQ 2024!</p>
+
+                    <!-- Form selector -->
+                    <div class="form-selector-wrap" id="form-selector-wrap">
+                        <a class="form-type-link" href="/" id="login-link">Login</a>
+                        <a class="form-type-link" href="/" id="register-link">Register</a>
+                        <div class="form-type-markup register_markup" id="form-type-markup"></div>
+                    </div>
+
+                    <!-- <p class="form-description" id="form-description">Lorem Ipsum is simply dummy text of the printing and typesetting -->
+                        <!-- industry. -->
+                    <!-- </p> -->
+
+                    <div class="forms-wrap">
+                        <!-- Register form -->
+                        <form novalidate class="register" id="register" action="#" method="post">
+
+                            <div class="form-field" id="name-field-block">
+                                <label class="form-label">Username</label>
+                                <input type="text" name="name" id="register-name-field" placeholder="Enter your User name" autocomplete="on"
+                                    minlength="4" maxlength="20" required pattern="^[a-zA-Z0-9]+$"/>
+                                    <span class="error" aria-live="polite"></span>
+                            </div>
+                            <div class="form-field password-field" id="password-field-block">
+                                <label class="form-label">Password</label>
+                                <input type="password" name="password" id="register-password-field"
+                                    class="password-field" autocomplete="off" placeholder="Enter your Password"
+                                    minlength="6" maxlength="20" pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).*"
+                                    title="Password must contain at least one uppercase letter, one lowercase letter, and one digit"
+                                    required>
+                                    <span class="error" aria-live="polite"></span>
+                                <img src="img/crossed-eye.svg" class="toggle-password-icon"
+                                    id="register-crossed-eye-icon" alt="show password" onclick="showPassword()">
+                                <img src="img/open-eye.svg" class="toggle-password-icon" id="register-open-eye-icon"
+                                    alt="show password" onclick="hidePassword()">
+
+                                <div class="form-field" id="email-field-block">
+                                  <label class="form-label">Telegram ID</label>
+                                  <input type="email" name="email" id="register-email-field"
+                                    placeholder="Enter your Telegram ID" autocomplete="off" required minlength="8" />
+                                  <span class="error" aria-live="polite"></span>
+                                </div>
+
+                            </div>
+
+                            <!-- Register button -->
+                            <div class="form-button">
+                                <button class="btn" id="register-btn">Register</button>
+                            </div>
+                        </form>
+
+                        <!-- Login Form -->
+                        <form novalidate class="login hidden" id="login" action="#" method="post">
+                            <div class="form-field" id="name-field-block">
+                                <label class="form-label">Username</label>
+                                <input type="text" name="name" id="login-name-field" placeholder="Enter your User name" autocomplete="on"
+                                    minlength="4" maxlength="20" required pattern="^[a-zA-Z0-9]+$">
+                                    <span class="error" aria-live="polite"></span>
+                            </div>
+
+                            <div class="form-field password-field" id="login-field-block">
+                                <label class="form-label">Password</label>
+                                <input type="password" name="password" id="login-password-field" class="password-field"
+                                    autocomplete="off" placeholder="Enter your Password" minlength="6" maxlength="20"
+                                    pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).*"
+                                    title="Password must contain at least one uppercase letter, one lowercase letter, and one digit"
+                                    required>
+                                    <span class="error" aria-live="polite"></span>
+                                <img src="img/crossed-eye.svg" class="toggle-password-icon" id="login-crossed-eye-icon"
+                                    alt="show password" onclick="showPassword()">
+                                <img src="img/open-eye.svg" class="toggle-password-icon" id="login-open-eye-icon"
+                                    alt="show password" onclick="hidePassword()">
+                            </div>
+
+                            <!-- Forgot password link -->
+                            <!-- <div class="form-link-forgot-password" id="forgot-password-link"> -->
+                            <!--     <a href="#">Forgot Password?</a> -->
+                            <!-- </div> -->
+                            <!-- Login button -->
+
+                            <div class="form-button">
+                                <button class="btn" id="login-btn">Login</button>
+                            </div>
+                        </form>
+
+
+                        <div class="success-message hidden" id="success-message">
+                            <img src="img/icon-success.svg" class="icon-success">
+                            <span>You have successfully registered</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="js/script.js" defer></script>
+</body>
+
+</html>

@@ -1,4 +1,3 @@
-import logging
 from app.settings import settings
 from celery import Celery
 
@@ -11,8 +10,6 @@ class TgService:
         self.celery = celery_app
 
     def send_notification(self, to: int, from_: str):
-        # Вызов задачи
-        logging.debug(settings.REDIS_URL, self.celery)
         self.celery.send_task("main.send_notification", args=[to, from_])
 
 

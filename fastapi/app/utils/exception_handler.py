@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 async def http_exception_handler(request: Request, exc: HTTPException):
     if exc.status_code == 403:
         msg: str = "Доступ запрещен!"
-        link: str = "/register"
+        link: str = "/static/register/index.html"
         link_text: str = "Войти или зарегестрировться"
 
     elif exc.status_code == 404:
@@ -26,7 +26,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
         logger.exception("Неизвестная ошибка")
 
     return templates.TemplateResponse(
-        "error.html",
+        "message.html",
         {"request": request, "msg": msg, "link": link, "link_text": link_text},
         status_code=exc.status_code,
     )

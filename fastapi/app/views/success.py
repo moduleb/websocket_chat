@@ -23,24 +23,24 @@ templates = Jinja2Templates(directory="templates")
 
 @router.get("/{type_}", response_class=HTMLResponse)
 async def success(request: Request, type_: str):
-    print(type_)
+
     match type_:
         case "register":
             msg: str = "Успешная регистрация!"
-            link: str = "/chat"
+            link: str = "/chat/"
             link_text: str = "Перейти в чат"
         case "login":
             msg: str = "Вы успешно авторизовались!"
-            link: str = "/chat"
+            link: str = "/chat/"
             link_text: str = "Перейти в чат"
         case _:
             msg: str = "Добро пожаловать!"
-            link: str = "/register"
+            link: str = "/static/register/index.html"
             link_text: str = "Войти или зарегистрироваться"
 
 
     # Возвращаем рендеринг шаблона с передачей объекта request
-    return templates.TemplateResponse("success.html", {
+    return templates.TemplateResponse("message.html", {
         "request": request,  # Передаем request для работы с URL и сессиями
         "msg": msg,
         "link": link,

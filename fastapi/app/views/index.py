@@ -15,11 +15,11 @@ templates = Jinja2Templates(directory="templates")
 @router.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     msg: str = "Добро пожаловать!"
-    link: str = "/register"
+    link: str = "/static/register/index.html"
     link_text: str = "Войти или зарегистрировться"
 
     # Возвращаем рендеринг шаблона с передачей объекта request
-    return templates.TemplateResponse("success.html", {
+    return templates.TemplateResponse("message.html", {
         "request": request,  # Передаем request для работы с URL и сессиями
         "msg": msg,
         "link": link,
