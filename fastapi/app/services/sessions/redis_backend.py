@@ -11,6 +11,7 @@ from fastapi_sessions.backends.session_backend import (
     SessionModel,
 )
 from fastapi_sessions.frontends.session_frontend import ID
+from redis.exceptions import ConnectionError
 
 logger = logging.getLogger(__name__)
 
@@ -26,14 +27,21 @@ class RedisBackend(SessionBackend[ID, SessionModel], Generic[ID, SessionModel]):
         # Проверка подключения
         pong = await self.redis_client.ping()
         if pong:
-            logger.debug("Успешно подключено к Redis")
+            logger.info("Успешно подключено к Redis.")
+            return True
         else:
             logger.error("Не удалось подключиться к Redis")
+            return False
 
     async def connect(self):
         """Connect to the Redis database."""
-        self.redis_client = await aioredis.from_url(settings.REDIS_URL)
-        await self._check_redis_connection()
+        try:
+            self.redis_client = await aioredis.from_url(settings.REDIS_URL)
+            return await self._check_redis_connection()
+
+        except ConnectionError:
+            logger.error("Не удалось подключиться к Redis")
+            return False
 
     async def close(self):
         """Close the Redis connection."""

@@ -1,37 +1,46 @@
 # from contextlib import asynccontextmanager
-import asyncio
 from contextlib import asynccontextmanager
+
 import uvicorn
-from app.api import login, logout, register, users, ws, messages
+from app.api import login, logout, messages, register, users, ws
+from app.db.database import is_connected_to_db
 from app.services.sessions.init import backend
-from app.views import chat, profile, success, index
 from app.settings import settings
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi import HTTPException, Request
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
 from app.utils.exception_handler import http_exception_handler
+from app.views import chat, index, success
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 
 
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-#     """Проверяем подключение к бд. Закрываем приложение елси бд недоступна."""
-#     if not await is_connected_to_db():
-#         msg = "База данных недоступна, Выход..."
-#         raise SystemExit(msg)
-#     yield
+async def check_db_connection():
+    """Проверяем подключение к бд. Закрываем приложение елси бд недоступна."""
+    if not await is_connected_to_db():
+        msg = "База данных недоступна, выход..."
+        raise RuntimeError(msg)
 
-# app = FastAPI(title="IM CHAT", lifespan=lifespan)
-# async def connect_to_redis():
+
+async def connect_to_redis():
+    if not await backend.connect():
+        msg = "Redis недоступен, выход..."
+        raise RuntimeError(msg)
+
+
+async def disconnect_redis():
+    await backend.close()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await backend.connect()
-    yield
-    await backend.close()
+    try:
+        await connect_to_redis()
+        await check_db_connection()
+        yield
+    except RuntimeError as e:
+        raise SystemExit(str(e)) from e
+    finally:
+        await disconnect_redis()
 
 
 app = FastAPI(title="ICQ 2024", lifespan=lifespan)
