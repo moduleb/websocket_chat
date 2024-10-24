@@ -19,6 +19,11 @@ async def http_exception_handler(request: Request, exc: HTTPException):
         link: str = "/"
         link_text: str = "Перейти на главную"
 
+    elif exc.status_code == 409:
+        msg: str = "Страница не найдена"
+        link: str = "/"
+        link_text: str = "Перейти на главную"
+
     else:
         msg: str = "Неизвестная ошибка!"
         link: str = "/"

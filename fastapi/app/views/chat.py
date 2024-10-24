@@ -24,6 +24,6 @@ async def chat(
     service_factory: Annotated[ServiceFactory, Depends(get_service_factory)],
     session_data: Annotated[SessionData, Depends(verifier)],
 ):
-    user_service = service_factory.get_user_service()
-    # username = session_data.username
-    return templates.TemplateResponse("chat.html", {"request": request})
+    # user_service = service_factory.get_user_service()
+    username = session_data.username
+    return templates.TemplateResponse("chat.html", {"request": request, "username": username})

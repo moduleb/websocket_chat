@@ -2,6 +2,8 @@ import logging
 from typing import Annotated
 from uuid import UUID
 
+from fastapi.responses import RedirectResponse
+
 from app.services.servise_factory import ServiceFactory, get_service_factory
 from app.services.sessions.init import cookie
 from fastapi import APIRouter, Depends, Response, status
@@ -23,7 +25,8 @@ async def logout(
     # if session_id:
     await session_service.delete(session_id)
     cookie.delete_from_response(response)
-    return {"message": "Successfully logged out"}
+    return RedirectResponse(url="/", status_code=303)
+    # return {"message": "Successfully logged out"}
 
     # raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
     #                     detail="Пользователь не авторизован.")

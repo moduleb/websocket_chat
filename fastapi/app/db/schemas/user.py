@@ -1,11 +1,12 @@
 import re
 import string
+from typing import Optional
 
 from pydantic import BaseModel, Field 
 
 
 class UssrDTO(BaseModel):
-    telegram_id: int = Field(examples=[123456789])
+    telegram_id: int | None = Field(default=None, examples=[123456789])
     username: str = Field(min_length=3, pattern=r"^[a-zA-Z0-9_]+$", examples=["user"])
     password: str = Field(
         min_length=6,

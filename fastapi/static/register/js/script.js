@@ -1,4 +1,6 @@
+// Переключение Register / Login
 const loginLink = document.getElementById('login-link');
+
 const registerLink = document.getElementById('register-link');
 const formTypeMarkup = document.getElementById('form-type-markup');
 
@@ -14,11 +16,12 @@ const formBox = document.getElementById('form-box');
 const registerPasswordField = document.getElementById('register-password-field');
 const loginPasswordField = document.getElementById('login-password-field');
 
+// Иконка глаза в пароле
+const registerOpenEyeIcon = document.getElementById("register-open-eye-icon");
+const registerCrossedEyeIcon = document.getElementById("register-crossed-eye-icon");
 const loginOpenEyeIcon = document.getElementById("login-open-eye-icon");
 const loginCrossedEyeIcon = document.getElementById("login-crossed-eye-icon");
 
-const registerOpenEyeIcon = document.getElementById("register-open-eye-icon");
-const registerCrossedEyeIcon = document.getElementById("register-crossed-eye-icon");
 const successMessage = document.getElementById("success-message");
 const successMessageText = successMessage.querySelector("span");
 
@@ -32,121 +35,149 @@ const emailError = document.querySelector("#register-email-field + span.error");
 const nameError = document.querySelector("#register-name-field + span.error");
 const passwordError = document.querySelector("#register-password-field + span.error");
 
-var credentials = {};
-var leftDistance = "";
-
-function saveToStorage(emailValue, usernameValue, passwordValue) {
-  credentials[usernameValue] = {
-    email: emailValue,
-    username: usernameValue,
-    password: passwordValue
-  };
-  localStorage.setItem("credentials", JSON.stringify(credentials)); // Сохраняем обновленные данн
-}
+// var leftDistance = "";
 
 
+// --------------- Submit Register -----------------------------------------------------
 
-form.addEventListener("submit", function (event) {
+form.addEventListener("submit", async function (event) {
+    var isvalid = true;
 
-  var isvalid = true;
-
-  // Если поле email валидно, позволяем форме отправляться
-
-  if (!email.validity.valid) {
-    // Если поле email не валидно, отображаем сообщение об ошибке
-    showEmailError();
-
-    // Предотвращаем стандартное событие отправки формы
-    event.preventDefault();
-
-    isvalid = false;
-  }
-
-  else { emailError.textContent = ""; }
-
-  if (!nameField.validity.valid) {
-    // Display an error message for the text field
-    showNameError();
-
-    // Prevent the form from submitting
-    event.preventDefault();
-
-    isvalid = false;
-  }
-
-  else { nameError.textContent = ""; }
-
-  if (!passwordField.validity.valid) {
-    // Display an error message for the text field
-    showPasswordError();
-
-    // Prevent the form from submitting
-    event.preventDefault();
-
-    isvalid = false;
-  }
-  else { passwordError.textContent = ""; }
-
-
-  if (isvalid == true) {
-    event.preventDefault();
-
-
-    // сохраняем данные в браузере
-    var usernameValue = nameField.value;
-    var emailValue = email.value;
-    var passwordValue = passwordField.value;
-
-    var credentials = JSON.parse(localStorage.getItem("credentials")) || {}; // Получаем данные из localStorage
-
-    if (credentials.hasOwnProperty(usernameValue)) { // Проверяем, существует ли уже такой ключ
-      // Код для обработки ситуации, когда такой ключ уже существует
-      nameError.textContent = "User already exists";
-      console.log("Такой username уже существует!");
-    }
-    else {
-      saveToStorage(emailValue, usernameValue, passwordValue)
-
-      registerFormBox.classList.add("hidden");
-      formSelector.classList.add("hidden");
-      formGreeting.classList.add("hidden");
-      formDescription.classList.add("hidden");
-      successMessage.classList.remove("hidden");
-
-      // перезагружаем страницу
-      setTimeout(function () {
-        location.reload();
-      }, 2000);
+    // Валидация полей
+    if (!email.validity.valid) {
+        // Если поле email не валидно, отображаем сообщение об ошибке
+        showEmailError();
+        // Предотвращаем стандартное событие отправки формы
+        event.preventDefault();
+        isvalid = false;
+    } else {
+        emailError.textContent = "";
     }
 
-  }
+    if (!nameField.validity.valid) {
+        showNameError();
+        event.preventDefault();
+        isvalid = false;
+    } else {
+        nameError.textContent = "";
+    }
+
+    if (!passwordField.validity.valid) {
+        showPasswordError();
+        event.preventDefault();
+        isvalid = false;
+    } else {
+        passwordError.textContent = "";
+    }
+
+    // Если все поля валидные - отправляем форму
+    if (isvalid) {
+        event.preventDefault();
+
+        // Создаем объект для отправки
+        const requestBody = {
+            username: nameField.value,
+            password: passwordField.value
+        };
+
+        // Добавляем telegram_id только если оно заполнено
+        if (email.value.trim() !== "") {
+            requestBody.telegram_id = email.value;
+    }
+        try {
+            const response = await fetch('/api/register/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (response.status === 201) {
+                window.location.href = '/success/register';
+
+            } else if (response.status === 409) {
+                alert('Пользователь с таким именем уже существует.');
+
+            } else {
+                const errorData = await response.json();
+                alert('Ошибка: ' + (errorData.message || 'Неизвестная ошибка'));
+            }
+        } catch (error) {
+            const errorData = await response.json();
+            console.error('Ошибка при отправке запроса:', error);
+            console.error('Ошибка при отправке запроса:', errorData);
+            alert('Произошла ошибка при регистрации. Пожалуйста, попробуйте еще раз.');
+        }
+    }
 });
 
 
+// --------------- Submit Login --------------------------------------------------------
+
+formLogin.addEventListener("submit", async function (event) {
+
+    // Проверка валидности полей
+    if (!loginNameField.validity.valid || !loginPasswordField.validity.valid) {
+        alert("Wrong login or password");
+        event.preventDefault();
+
+    } else {
+        // Если все поля валидные - отправляем форму
+        event.preventDefault(); 
+
+        try {
+            const response = await fetch('/api/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: loginNameField.value,
+                    password: loginPasswordField.value
+                })
+            });
+
+            if (response.status === 200) {
+                window.location.href = '/success/login';
+
+            } else if (response.status === 401) {
+                alert('Wrong login or password');
+
+            } else {
+                const errorData = await response.json();
+                alert('Ошибка: ' + (errorData.message || 'Неизвестная ошибка'));
+            }
+
+        } catch (error) {
+            console.error('Ошибка при отправке запроса:', error);
+            alert('Произошла ошибка при авторизации. Пожалуйста, попробуйте еще раз.');
+        }
+    }
+});
+
+
+// --------------- Отображение ошибок в полях ------------------------------------------
 
 function showEmailError() {
-
   // Если поле пустое...
-  if (email.validity.valueMissing) {
-    emailError.textContent = "You need to enter an e-mail address.";
+  // if (email.validity.valueMissing) {
+  //   emailError.textContent = "You need to enter Telegram ID.";
+  //   }
 
-    // Если поле содержит не email-адрес...
-  } else if (email.validity.typeMismatch) {
-    emailError.textContent = "Entered value needs to be an e-mail address.";
+  // Если поле содержит не email-адрес...
+  if (email.validity.typeMismatch) {
+    emailError.textContent = "Entered value needs to be digits.";
 
     // Если содержимое слишком короткое...
   } else if (email.validity.tooShort) {
-    emailError.textContent = `Email should be at least ${email.minLength} characters; you entered ${email.value.length}.`;
+    emailError.textContent = `Telegram ID should be ${email.minLength} digits; you entered ${email.value.length}.`;
   }
-
-
   // Задаём стилизацию
   emailError.className = "error active";
 }
 
-
 function showNameError() {
-
   // Если поле пустое...
   if (nameField.validity.valueMissing) {
     nameError.textContent = "You need to enter an user name.";
@@ -159,14 +190,11 @@ function showNameError() {
   } else if (nameField.validity.patternMismatch) {
     nameError.textContent = "User name can only contain English letters and numbers.";
   }
-
   // Задаём стилизацию
   nameError.className = "error active";
 }
 
-
 function showPasswordError() {
-
   // Если поле пустое...
   if (passwordField.validity.valueMissing) {
     passwordError.textContent = "You need to enter an password.";
@@ -179,107 +207,13 @@ function showPasswordError() {
   } else if (passwordField.validity.patternMismatch) {
     passwordError.textContent = "Password must contain uppercase and lowercase letters and digits";
   }
-
   // Задаём стилизацию
   nameError.className = "error active";
 }
 
 
+// --------------- Переключение видимости пароля ---------------------------------------
 
-/*
-Сбрасывает содержимое форм, ошибки валидации, и видимость пароля 
-  при переключении типа формы (login, register)
-*/
-function reset() {
-  for (var i = 0; i < forms.length; i++) {
-    forms[i].reset()
-  }
-  emailError.textContent = ""; // Сбросить содержимое сообщения
-  // emailError.className = "error"; // Сбросить визуальное состояние сообщения 
-  nameError.textContent = "";
-  // nameFieldError.className = "error";
-  passwordError.textContent = "";
-  hidePassword()
-}
-
-// login submit
-formLogin.addEventListener("submit", function (event) {
-
-  console.log(loginNameField.validity.valid);
-  // Если поле email валидно, позволяем форме отправляться
-
-  if (!loginNameField.validity.valid) {
-    // Если поле email не валидно, отображаем сообщение об ошибке
-    alert("Wrong login or password");
-    event.preventDefault();
-  }
-
-  else if (!loginPasswordField.validity.valid) {
-    alert("Wrong login or password");
-    event.preventDefault();
-  }
-
-  else {
-    event.preventDefault();
-    // Получение данных из LocalStorage
-    var storedCredentials = localStorage.getItem("credentials");
-
-    // Проверка, что данные были сохранены
-    if (storedCredentials) {
-      // Преобразование строки JSON обратно в объект
-      var credentials = JSON.parse(storedCredentials);
-
-      // Получение данных для определенного пользователя
-      var userNameValue = loginNameField.value;
-      var userPasswordValue = loginPasswordField.value;
-      var userCredentials = credentials[userNameValue];
-
-      // Проверка, что данные для пользователя существуют
-      if (userCredentials) {
-        var passwordCredentials = userCredentials.password;
-        var emailCredentials = userCredentials.email;
-        var usernameCredentials = userCredentials.username;
-        console.log("Username: " + userNameValue);
-        console.log("Password: " + userPasswordValue);
-
-        console.log("Username from storage: " + usernameCredentials);
-        console.log("Email from storage: " + emailCredentials);
-        console.log("Пароль from storage: " + passwordCredentials);
-
-        if (userPasswordValue != passwordCredentials) {
-          alert("Wrong login or password");
-        }
-        else {
-          loginFormBox.classList.add("hidden");
-          formSelector.classList.add("hidden");
-          formGreeting.classList.add("hidden");
-          formDescription.classList.add("hidden");
-          successMessageText.innerHTML = "You have successfully logged in";
-          successMessage.classList.remove("hidden");
-          setTimeout(function () {
-            location.reload();
-          }, 2000);
-        }
-      } else {
-        alert("Wrong login or password");
-        console.log("Данные для пользователя не найдены");
-      }
-    } else {
-      console.log("Данные в LocalStorage не найдены");
-    }
-
-    // alert('Ok')
-  }
-});
-
-
-
-
-
-
-
-
-// * Toggles the type of the password field.
 function showPassword() {
   loginPasswordField.type = "text";
   loginCrossedEyeIcon.style.display = "none";
@@ -299,8 +233,9 @@ function hidePassword() {
   registerOpenEyeIcon.style.display = "none";
   registerCrossedEyeIcon.style.display = "block";
 }
-// --------------------------------------------
 
+
+// --------------- Переключение Register / Login ---------------------------------------
 
 // Добавляем обработчик события на клик по ссылке Login
 loginLink.addEventListener('click', function (e) {
@@ -336,5 +271,19 @@ registerLink.addEventListener('click', function (e) {
   reset()
 });
 
-
+/*
+Сбрасывает содержимое форм, ошибки валидации, и видимость пароля 
+  при переключении типа формы (login, register)
+*/
+function reset() {
+  for (var i = 0; i < forms.length; i++) {
+    forms[i].reset()
+  }
+  emailError.textContent = ""; // Сбросить содержимое сообщения
+  // emailError.className = "error"; // Сбросить визуальное состояние сообщения 
+  nameError.textContent = "";
+  // nameFieldError.className = "error";
+  passwordError.textContent = "";
+  hidePassword()
+}
 

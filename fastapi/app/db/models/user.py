@@ -12,7 +12,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String(30), unique=True)
     password: Mapped[str] = mapped_column(String(70))
-    telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id!r}, username={self.username!r})"

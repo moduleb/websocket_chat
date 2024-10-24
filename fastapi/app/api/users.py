@@ -27,4 +27,4 @@ async def users(
     # Удаляем совственный username
     usernames.remove(username)
 
-    return {"data": {"usernames": usernames}}
+    return {"data": {"usernames": usernames, "you": username}}

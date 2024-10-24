@@ -4,6 +4,7 @@ body {
 }
 
 
+
 #users {
     width: 300px;
     background-color: #ffffff;
@@ -64,7 +65,7 @@ li.active {
     color: white; /* Цвет текста для активного пользователя */
 }
 
-#placeholder {
+#right_block {
     width: 300px;
     background-color: #ffffff;
     border-right: 1px solid #ddd;
@@ -72,4 +73,5 @@ li.active {
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
     border-radius: 5px; /* Закругленные углы */
+    text-align: center;
 }
