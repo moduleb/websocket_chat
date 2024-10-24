@@ -85,7 +85,6 @@ async def accept_websocket_connection(
                 logger.debug("Адресат сообщения оффлайн, username: %s", msg_dto.to)
 
                 if user_recipient:
-
                     tg_service.send_notification(to = user_recipient.telegram_id,
                                   from_ = msg_dto.from_)
                 else:

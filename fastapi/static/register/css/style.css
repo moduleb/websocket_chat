@@ -12,8 +12,8 @@ html {
 
 body {
     margin: 0;
-	padding: 0;
-	border: 0;
+    padding: 0;
+    border: 0;
     font-size: 16px;
     font-weight: 400;
     font-family: 'Poppins', sans-serif;
@@ -92,6 +92,8 @@ a:hover {
     display: flex;
     width: 737px;
     height: 825px;
+    height: 725px;
+
     align-items: flex-end;
     border-radius: 29px;
     background: linear-gradient(180deg, rgba(151, 118, 68, 0.35) 0%, rgba(0, 0, 0, 0.35) 100%),
@@ -110,6 +112,7 @@ a:hover {
 
 .form-box {
     padding-top: 75px;
+    padding-top: 65px;
     width: 454px;
     position: relative;
 }
@@ -324,7 +327,18 @@ input:-webkit-autofill {
     transition: opacity 0.5s ease-in;
 }
 
-@media screen and (min-width: 495px) and (max-width: 1520px) {
+/* @media screen and (min-width: 1021px) { */
+/*     .image-block { */
+/*         display : flex ; */
+/*     } */
+
+/*     .container { */
+/*         width: 1440px; */
+/*         padding: 20px 20px; */
+/*     } */
+/* } */
+
+@media screen and (min-width: 495px) and (max-width: 1020px) {
     .image-block {
         display: none;
     }
@@ -335,7 +349,7 @@ input:-webkit-autofill {
     }
 }
 
-@media screen and (min-width: 0px) and (max-width: 494px) {
+@media screen and (max-width: 494px) {
     .image-block {
         display: none;
     }
@@ -358,3 +372,4 @@ input:-webkit-autofill {
         padding: 3px 20px;
     }
 }
+

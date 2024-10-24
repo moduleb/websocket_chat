@@ -141,7 +141,10 @@ function displayMessage(from_, text) {
 
 // ----------------- Получение сообщения по websocket ----------------------------------
 
-const socket = new WebSocket('ws://127.0.0.1:80/ws');
+// const socket = new WebSocket('ws://127.0.0.1:80/ws');
+const socket = new WebSocket(`${window.location.protocol.replace('http', 'ws').replace('https', 'wss')}//${window.location.host}/ws`);
+
+// const socket = new WebSocket('/ws');
 
 // Обработчик события onmessage для сокета
 socket.onmessage = function(event) {
