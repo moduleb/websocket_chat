@@ -21,15 +21,15 @@ async def command_start_handler(msg: Message) -> None:
     try:
         text = (
             "🎉 Welcome, *popcorn138*! 🎉\n\n"
-            "🔑 Твой ID: *5312665858*\n"
+            f"🔑 Твой ID: *{msg.from_user.id}*\n"
             "Используй этот номер при регистрации на сайте.\n\n"
             "📩 После этого бот сможет оповещать тебя о непрочитанных сообщениях."
 )
-        button = InlineKeyboardButton(
-            text="Зарегистрироваться",
-            url=settings.APP_URL,
-        )
-        keyboard = types.InlineKeyboardMarkup(inline_keyboard=[[button]])
+        # button = InlineKeyboardButton(
+        #     text="Зарегистрироваться",
+        #     url=settings.APP_URL,
+        # )
+        # keyboard = types.InlineKeyboardMarkup(inline_keyboard=[[button]])
         await msg.answer(text, parse_mode="Markdown")
 
     except Exception:
