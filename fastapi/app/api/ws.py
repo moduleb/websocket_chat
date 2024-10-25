@@ -91,8 +91,11 @@ async def accept_websocket_connection(
                     logger.warning("Пользователя с username: %s не найден.", msg_dto.to)
 
     except WebSocketDisconnect:
+        logger.debug("User: %s отключился от вебсокет.", username)
         if username in connections:
             del connections[username]
 
-    except ValueError:
-        pass
+    except Exception:
+        logger.exception("Неизвестная ошибка в пддключении по вебсокету.")
+        if username in connections:
+            del connections[username]
