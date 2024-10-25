@@ -14,6 +14,7 @@ templates = Jinja2Templates(directory="templates")
 
 @router.get("/", response_class=HTMLResponse)
 async def index(request: Request):
+    """Главная страница."""
     msg: str = "Добро пожаловать!"
     link: str = "/static/register/index.html"
     link_text: str = "Войти или зарегистрировться"
