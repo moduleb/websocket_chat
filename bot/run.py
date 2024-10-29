@@ -20,7 +20,7 @@ commands = [BotCommand(command="start", description="Start the bot")]
 async def command_start_handler(msg: Message) -> None:
     try:
         text = (
-            "🎉 Welcome, *popcorn138*! 🎉\n\n"
+            f"🎉 Welcome, *{msg.from_user.username}*! 🎉\n\n"
             f"🔑 Твой ID: *{msg.from_user.id}*\n"
             "Используй этот номер при регистрации на сайте.\n\n"
             "📩 После этого бот сможет оповещать тебя о непрочитанных сообщениях."

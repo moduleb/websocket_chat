@@ -3,6 +3,18 @@ body {
     height: 100vh;
 }
 
+/* Скрытие стрелок в цифровом поле ввода  (telegram id) */
+/* Для Chrome, Safari и Edge */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Для Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
 
 
 #users {

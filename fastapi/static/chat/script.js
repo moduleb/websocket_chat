@@ -7,6 +7,7 @@ let my_username = "" // Переменная для хранение собст�
 let recipient = null; // Переменная для хранения имени получателя
 
 
+
 // ----------------- Работа со списком пользователей -----------------------------------
 
 // Функция для получения списка пользователей
@@ -141,10 +142,29 @@ function displayMessage(from_, text) {
 
 // ----------------- Получение сообщения по websocket ----------------------------------
 
-// const socket = new WebSocket('ws://127.0.0.1:80/ws');
-const socket = new WebSocket(`${window.location.protocol.replace('http', 'ws').replace('https', 'wss')}//${window.location.host}/ws`);
+// const socket = new WebSocket(`${window.location.protocol.replace('http', 'ws').replace('https', 'wss')}//${window.location.host}/ws`);
 
-// const socket = new WebSocket('/ws');
+let socket = null;
+
+function createWebSocket() {
+    socket = new WebSocket(`${window.location.protocol.replace('http', 'ws').replace('https', 'wss')}//${window.location.host}/ws`);
+
+    socket.onopen = function() {
+        console.log('WebSocket соединение открыто');
+    };
+
+    socket.onclose = function() {
+        console.log('WebSocket соединение закрыто, пытаемся переподключиться...');
+        setTimeout(createWebSocket, 500); // Пытаемся переподключиться через 0,5 секунду
+    };
+
+    socket.onerror = function(error) {
+        console.error('WebSocket ошибка:', error);
+    };
+}
+
+// Инициализируем WebSocket соединение
+createWebSocket();
 
 // Обработчик события onmessage для сокета
 socket.onmessage = function(event) {

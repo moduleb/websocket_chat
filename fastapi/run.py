@@ -1,15 +1,12 @@
-
 from contextlib import asynccontextmanager
 
 import uvicorn
 from app.api import login, logout, messages, register, users, ws
+from app.db import database
+from app.db.database import db_init
 from app.settings import settings
 from app.utils.exception_handler import http_exception_handler
-from app.utils.start_app_helpers import (
-    check_db_connection,
-    connect_to_redis,
-    disconnect_redis,
-)
+from app.utils.start_app_helpers import connect_to_redis, disconnect_redis
 from app.views import chat, index, success
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,10 +18,18 @@ from fastapi.staticfiles import StaticFiles
 async def lifespan(app: FastAPI):
     try:
         await connect_to_redis()
-        await check_db_connection()
+        # Инициализируем базу данных и прокидваем session maker
+        database.AsyncSessionLocal = await db_init()
         yield
+    except ConnectionRefusedError as e:
+        msg = "База данных недоступна, выход..."
+        raise SystemExit(msg) from e
     except RuntimeError as e:
-        raise SystemExit(str(e)) from e
+        msg = "Redis недоступен, выход..."
+        raise SystemExit(msg) from e
+    except Exception as e:
+        msg = "Непредвиденная ошибка, выход..."
+        raise SystemExit(msg) from e
     finally:
         await disconnect_redis()
 

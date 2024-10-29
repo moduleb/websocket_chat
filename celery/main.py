@@ -28,9 +28,9 @@ def send_notification(to: str, from_: str):
         loop = asyncio.get_event_loop()
         loop.run_until_complete(bot.send_message(chat_id=to, text=msg))
 
-    except TelegramBadRequest:
+    except TelegramBadRequest as e:
         logger.info(
-            "Телеграм пользователя с таким id не существует, id: %s.", to)
+            "Ошщибка при отравке сообщению пользователю, id: %s.\nError: %s", to, e)
     except Exception:
         logger.exception(
             "Ошибка при попытке отправки сообщения в телеграм "
